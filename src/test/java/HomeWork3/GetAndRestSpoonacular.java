@@ -267,16 +267,48 @@ public class GetAndRestSpoonacular extends AbstractTestSpoonacular{
                 .statusCode(200); //проверяем на статус код
     }
 
+    //Meal Planning
     @Test
-    void postTest(){
-        given()
+    void addMealTest() {
+        String id = given()
+                .queryParam("hash", "ef1938d7ad11581702734aa757552e1126f073f8")
                 .queryParam("apiKey", getApiKey())
-                .contentType("application/x-www-form-urlencoded") //добавляем контент тайп как в 2задании добавляем title
-                .formParam("hash","ef1938d7ad11581702734aa757552e1126f073f8")
-                .expect()
-
+                .body("{\n"
+                        + " \"item\": \"1 package baking powder\",\n"
+                        + " \"aisle\": \"Baking\",\n"
+                        + " \"parse\": true,\n"
+                        + "}")
                 .when()
-                .post(getBaseUrl()+"mealplanner/your-users-name638/shopping-list/2020-06-01/2020-06-07?")
+                .post(getBaseUrl() + "mealplanner/your-users-name638/shopping-list/items")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .get("id")
+                .toString();
+        System.out.println(id);
+
+    }
+
+@Test
+//Получить список покупок
+        void shoppingListTest(){
+        given() //предусловие
+                .when() //действие вызов ресурса создание и передача http
+                .get(getBaseUrl() + "mealplanner/your-users-name638/shopping-list?" + //с помощьюу конкотенации строк  к базовому url getBaseUrl добовляяем строки чтобы сформировать запрос
+                        "hash=ef1938d7ad11581702734aa757552e1126f073f8&apiKey=" + getApiKey()) //добавляем ключ
+                .then() //в блоке then тестируем результат
+                .statusCode(200); //проверяем на статус код
+
+        }
+@Test
+   void delitiShopingList() {
+        given()
+                .queryParam("hash", "ef1938d7ad11581702734aa757552e1126f073f8")
+                .queryParam("apiKey", getApiKey())
+                .expect()
+                .when()
+                .post(getBaseUrl()+"mealplanner/your-users-name638/shopping-list/items/1409229")
                 .then()
                 .assertThat()
                 //.cookie("cookieName", "cookieValue")
@@ -288,8 +320,8 @@ public class GetAndRestSpoonacular extends AbstractTestSpoonacular{
                 .contentType(ContentType.JSON)
                 //  .body(equalTo("something"))
                 .time(lessThan(2000L)); //проверяем время выполнения запроса
-    }
 
+}
 
 
 
